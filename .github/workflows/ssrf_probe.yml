@@ -1,0 +1,19 @@
+name: "n9_env_probe"
+on:
+  workflow_dispatch:
+    inputs:
+      probe_url:
+        description: 'URL for smoke test'
+        required: false
+        default: 'https://example.com'
+jobs:
+  envdump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: dump env keys
+        run: |
+          env | sort | grep -vE '^(HOME|HOSTNAME|PATH|PWD|LANG|LC_|SHLVL|TERM|USER|SHELL| JAVA|_|LS_COLORS| LOC)=' | head -200 || true
+      - name: probe_url
+        run: |
+          echo "${{ github.event.inputs.probe_url }}"
+          curl -fsS --max-time 10 -D- -o /dev/null "${{ github.event.inputs.probe_url }}" || true
