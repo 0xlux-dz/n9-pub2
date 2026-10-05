@@ -1,0 +1,18 @@
+name: "n9_artifact_probe"
+on:
+  workflow_dispatch:
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    steps:
+      - name: make file
+        run: |
+          echo "hello $(date)" > owo.txt
+          head -c 64 /dev/urandom | base64 > rand.bin
+      - name: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: n9_probe_artifact
+          path: |
+            owo.txt
+            rand.bin
