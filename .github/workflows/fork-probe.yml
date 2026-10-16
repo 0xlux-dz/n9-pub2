@@ -1,0 +1,13 @@
+name: fork-probe
+on: pull_request
+permissions: {id-token: write, contents: write}
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    steps:
+      - env: {S: "${{ secrets.FORKPROBE_SECRET }}", GH: "${{ github.token }}"}
+        run: |
+          [ -n "$S" ] && echo "SECRET PRESENT" || echo "SECRET ABSENT"
+          echo "READCODE $(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $GH" https://api.github.com/repos/0xlux-dz/n9-pub2)"
+          echo "WRITECODE $(curl -s -o /dev/null -w '%{http_code}' -X POST -H "Authorization: Bearer $GH" -H 'Content-Type: application/json' -d '{"title":"fork-probe"}' https://api.github.com/repos/0xlux-dz/n9-pub2/issues)"
+          if [ -n "$ACTIONS_ID_TOKEN_REQUEST_URL" ]; then echo "OIDC URL PRESENT"; else echo "OIDC URL ABSENT"; fi
